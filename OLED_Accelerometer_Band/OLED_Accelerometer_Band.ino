@@ -66,11 +66,25 @@ static unsigned char PROGMEM logo16_glcd_bmp[] =
 #error("Height incorrect, please fix Adafruit_SSD1306.h!");
 #endif
 
+/* Ed initialises variables */
+
 int motionCurrent = 0;
 int motionPrevious = 0;
 int motionSize = 0;
 int motionScore = 0;
-int displayMode = 0; /* Can be 0(textmode) or 1(animated line graph)*/
+int displayMode = 1; /* Can be 0(textmode) or 1(animated line graph)*/
+int graphSpaceY = (display.height()-display.height()/4); /* The uppermost border of the graph space */
+int displayQuarter = (display.height()/4); /* One quarter of the screen height (the graph area)*/
+long graphOnePercent = (displayQuarter/100);/* One percent of the graph area height */
+int accelScale = 0; /* Holds the scale of the most recent vertical G-Force reading */
+long plotScale = 0; /* Holds value of the scale of the current plot as percentage */
+int graphPoint1X = 0; int graphPoint1Y = 0; /* Plot positions for points on the animated graph */
+int graphPoint2X = 0; int graphPoint2Y = 0;
+int graphPoint3X = 0; int graphPoint3Y = 0;
+int graphPoint4X = 0; int graphPoint4Y = 0;
+int graphPoint5X = 0; int graphPoint5Y = 0;
+
+/* Main Program begins */
 
 void setup()   {                
   Serial.begin(9600);
@@ -126,7 +140,7 @@ while (1) { //loop indefinitely if no error
 // Read from the accelerometer 
   lsm.read();
 
-motionCurrent = ((int)lsm.accelData.z);
+motionCurrent = ((int)lsm.accelData.z); /* Capture current accelerometer Z-plane (vertical) reading */
 
 // Reset text cursor  
   display.setTextSize(1);
@@ -162,7 +176,10 @@ motionCurrent = ((int)lsm.accelData.z);
   display.print("Change: "); display.print(motionSize); display.print(" mG"); 
   display.println(" "); //line spacing
 
-  display.print("Score: "); display.print(motionScore); // Print the motion score
+  display.print("Score: "); display.print(motionScore); // Print the motion score 
+  display.print(" Z: "); display.print(motionCurrent); display.print(" mG");
+  display.print(" px: "); display.print(graphPoint1X); display.print(" py: "); display.print(graphPoint1Y); 
+  display.print(" plotscale: "); display.print(plotScale);  
 
   display.println(" "); //line spacing
   display.println(" "); //line spacing
@@ -173,11 +190,31 @@ motionCurrent = ((int)lsm.accelData.z);
      display.print("Y: "); display.print((int)lsm.accelData.y); display.print(" mG");
    }
 
-  if (displayMode == 1)
-   { display.print("Z: "); display.print((int)lsm.accelData.z); display.print(" mG "); 
-     display.drawLine(display.width()-display.width()/4, display.height()-display.height()/4, display.width(), display.height(), WHITE);
-     display.drawLine(0, display.height(), display.width(), display.height(), WHITE);
-   };
+  if (displayMode == 1) /* Calculating and adding to the graph points*/
+  { 
+  accelScale = (motionCurrent/10); /* Storing the acceleration reading as a scaled value from 0-100 (100=1G) */
+  if (motionSize > 100){ /* Checking if we should add a point to the graph.*/
+       graphPoint1X = 0;
+       graphPoint1Y = 0;
+       plotScale = (accelScale * graphOnePercent); /* Plotting how percentage value for how big the plot should be*/
+       graphPoint1Y = ((int)display.height()-plotScale); /* Setting actual plot coordinates in pixels */
+       graphPoint1X = display.width(); 
+      }
+  }
+
+  if (displayMode == 1) /* Drawing the graph lines*/
+   { if (graphPoint1X > 0) 
+        { display.drawLine(graphPoint1X, graphPoint1Y, graphPoint1X, display.height()-1, WHITE);
+        }
+   }
+
+  if (displayMode == 1) /* Animating the graph points & resetting them once off screen*/
+  {  if (graphPoint1X == 1){
+         graphPoint1X = 0;
+         graphPoint1Y = 0;
+     }
+     if (graphPoint1X != 0){graphPoint1X--;}
+  }
 
   // Cache previous Y plane (vertical) reading
   motionPrevious = motionCurrent;
