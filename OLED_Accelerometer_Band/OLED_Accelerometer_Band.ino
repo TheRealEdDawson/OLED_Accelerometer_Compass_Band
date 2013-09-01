@@ -70,7 +70,7 @@ int motionCurrent = 0;
 int motionPrevious = 0;
 int motionSize = 0;
 int motionScore = 0;
-int displayMode = 1; /* Can be 0(textmode) or 1(animated line graph)*/
+int displayMode = 0; /* Can be 0(textmode) or 1(animated line graph)*/
 
 void setup()   {                
   Serial.begin(9600);
