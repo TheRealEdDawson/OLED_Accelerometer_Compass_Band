@@ -1,8 +1,13 @@
-/********* Small modification from the Adafruit example code for Ed Dawson's 
-OLED-Accelerometer-Compass Project: Uses Pin 10 for OLED_RESET (Rst pinout on FLORA board) 
-instead of Pin 4 as per the Adafruit default code (for Arduino Uno). Takes readings from the 
-Adafruit FLORA accelerometer LSM303 (see http://www.adafruit.com/products/1247 ) and displays 
-them on the Adafruit 128-64 pixel OLED display (see http://www.adafruit.com/products/326 ).
+/********* Ed Dawson's OLED-Accelerometer-Compass Project: 
+Based on the Adafruit FLORA Arduino compatible:
+(see http://www.adafruit.com/products/659 )
+Wiring: Uses Pin 10 for OLED_RESET ("Rst" pinout on FLORA board) 
+instead of Pin 4 as per the Adafruit default code (for Arduino Uno). 
+Takes readings from the Adafruit FLORA accelerometer LSM303 
+(see http://www.adafruit.com/products/1247 ) 
+and displays them on the Adafruit 128-64 pixel OLED display 
+(see http://www.adafruit.com/products/326 ). 
+(this code is based on from the Adafruit example code for these components.)
 *********/
 
 /*********************************************************************
@@ -65,6 +70,7 @@ int motionCurrent = 0;
 int motionPrevious = 0;
 int motionSize = 0;
 int motionScore = 0;
+int displayMode = 1; /* Can be 0(textmode) or 1(animated line graph)*/
 
 void setup()   {                
   Serial.begin(9600);
@@ -161,10 +167,18 @@ motionCurrent = ((int)lsm.accelData.z);
   display.println(" "); //line spacing
   display.println(" "); //line spacing
   
-  display.print("Z: "); display.print((int)lsm.accelData.z); display.print(" mG "); 
-  display.print("X: "); display.print((int)lsm.accelData.x); display.print(" mG ");
-  display.print("Y: "); display.print((int)lsm.accelData.y); display.print(" mG");
-  
+  if (displayMode == 0)
+   { display.print("Z: "); display.print((int)lsm.accelData.z); display.print(" mG "); 
+     display.print("X: "); display.print((int)lsm.accelData.x); display.print(" mG ");
+     display.print("Y: "); display.print((int)lsm.accelData.y); display.print(" mG");
+   }
+
+  if (displayMode == 1)
+   { display.print("Z: "); display.print((int)lsm.accelData.z); display.print(" mG "); 
+     display.drawLine(display.width()-display.width()/4, display.height()-display.height()/4, display.width(), display.height(), WHITE);
+     display.drawLine(0, display.height(), display.width(), display.height(), WHITE);
+   };
+
   // Cache previous Y plane (vertical) reading
   motionPrevious = motionCurrent;
   
