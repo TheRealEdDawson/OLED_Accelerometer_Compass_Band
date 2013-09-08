@@ -75,9 +75,9 @@ int motionScore = 0;
 int displayMode = 1; /* Can be 0(textmode) or 1(animated line graph)*/
 int graphSpaceY = (display.height()-display.height()/4); /* The uppermost border of the graph space */
 int displayQuarter = (display.height()/4); /* One quarter of the screen height (the graph area)*/
-long graphOnePercent = (displayQuarter/100);/* One percent of the graph area height */
+int graphOnePercent = (displayQuarter/100);/* One percent of the graph area height */
 int accelScale = 0; /* Holds the scale of the most recent vertical G-Force reading */
-long plotScale = 0; /* Holds value of the scale of the current plot as percentage */
+int plotScale = 0; /* Holds value of the scale of the current plot as percentage */
 int graphPoint1X = 0; int graphPoint1Y = 0; /* Plot positions for points on the animated graph */
 int graphPoint2X = 0; int graphPoint2Y = 0;
 int graphPoint3X = 0; int graphPoint3Y = 0;
@@ -116,26 +116,11 @@ void setup()   {
   display.drawPixel(68, 39, WHITE);  
   display.display();
   delay(2000);
-
-  /* Test Pattern (box with cross in centre)
-  display.drawLine(0, 0, 127, 0, WHITE);
-  display.drawLine(127, 0, 127, 63, WHITE);
-  display.drawLine(127, 63, 0, 63, WHITE);
-  display.drawLine(0, 63, 0, 0, WHITE);
-  display.drawLine(0, 0, 127, 63, WHITE);
-  display.drawLine(127, 0, 0, 63, WHITE);  
-  display.display();
-  delay(2000);
-  display.clearDisplay();  
-  */
-  
+ 
   // clean up test graphics
   delay(1000); 
   display.clearDisplay();
   
-  // draw a bitmap icon and 'animate' movement
-  //testdrawbitmap(logo16_glcd_bmp, LOGO16_GLCD_HEIGHT, LOGO16_GLCD_WIDTH);
-
 while (1) { //loop indefinitely if no error
 // Read from the accelerometer 
   lsm.read();
@@ -178,7 +163,7 @@ motionCurrent = ((int)lsm.accelData.z); /* Capture current accelerometer Z-plane
 
   display.print("Score: "); display.print(motionScore); // Print the motion score 
   display.print(" Z: "); display.print(motionCurrent); display.print(" mG");
-  display.print(" px: "); display.print(graphPoint1X); display.print(" py: "); display.print(graphPoint1Y); 
+  /* display.print(" px: "); display.print(graphPoint1X); display.print(" py: "); display.print(graphPoint1Y); */
   display.print(" plotscale: "); display.print(plotScale);  
 
   display.println(" "); //line spacing
@@ -186,8 +171,8 @@ motionCurrent = ((int)lsm.accelData.z); /* Capture current accelerometer Z-plane
   
   if (displayMode == 0)
    { display.print("Z: "); display.print((int)lsm.accelData.z); display.print(" mG "); 
-     display.print("X: "); display.print((int)lsm.accelData.x); display.print(" mG ");
-     display.print("Y: "); display.print((int)lsm.accelData.y); display.print(" mG");
+     /* display.print("X: "); display.print((int)lsm.accelData.x); display.print(" mG ");
+     display.print("Y: "); display.print((int)lsm.accelData.y); display.print(" mG"); */
    }
 
   if (displayMode == 1) /* Calculating and adding to the graph points*/
