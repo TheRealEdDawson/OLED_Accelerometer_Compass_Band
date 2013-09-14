@@ -133,8 +133,8 @@ motionCurrent = ((int)lsm.accelData.z); /* Capture current accelerometer Z-plane
   display.setCursor(0,0);
 
 //Begin displaying sensor readings on screen
-  display.println("   G-Force Monitor");
-  display.println(" ");
+  /* display.println("   G-Force Monitor");
+  display.println(" "); */
     
     //Determining scale of the difference between previous and current Z-plane (vertical) measurements
   if (motionPrevious > motionCurrent)
@@ -145,7 +145,7 @@ motionCurrent = ((int)lsm.accelData.z); /* Capture current accelerometer Z-plane
    { motionSize = (motionCurrent-motionPrevious);
    }
   
-  display.print("Motion: "); // Show whether the unit is moving or not.
+  /* display.print("Motion: "); */ // Show whether the unit is moving or not.
    
   if (motionSize > 100)
    { display.print("Moving"); 
@@ -156,18 +156,18 @@ motionCurrent = ((int)lsm.accelData.z); /* Capture current accelerometer Z-plane
    { display.print("Stationary");  
    }
 
-  display.println(" "); //line spacing
+  /* display.println(" "); //line spacing */
 
-  display.print("Change: "); display.print(motionSize); display.print(" mG"); 
+  /*  display.print("Change: "); */ display.print(motionSize); display.print(" mG"); 
   display.println(" "); //line spacing
 
   display.print("Score: "); display.print(motionScore); // Print the motion score 
-  display.print(" Z: "); display.print(motionCurrent); display.print(" mG");
+  /* display.print(" Z: "); display.print(motionCurrent); display.print(" mG"); */
   /* display.print(" px: "); display.print(graphPoint1X); display.print(" py: "); display.print(graphPoint1Y); */
-  display.print(" plotscale: "); display.print(plotScale);  
+  /* display.print(" plotscale: "); display.print(plotScale);  */
 
-  display.println(" "); //line spacing
-  display.println(" "); //line spacing
+  /*  display.println(" "); //line spacing
+  display.println(" "); //line spacing */
   
   if (displayMode == 0)
    { display.print("Z: "); display.print((int)lsm.accelData.z); display.print(" mG "); 
@@ -181,15 +181,17 @@ motionCurrent = ((int)lsm.accelData.z); /* Capture current accelerometer Z-plane
   if (motionSize > 100){ /* Checking if we should add a point to the graph.*/
        graphPoint1X = 0;
        graphPoint1Y = 0;
-       plotScale = (accelScale * graphOnePercent); /* Plotting how percentage value for how big the plot should be*/
+       /*plotScale = (accelScale * graphOnePercent); */ /* Plotting how percentage value for how big the plot should be*/
+       plotScale = (motionCurrent/64);
        graphPoint1Y = ((int)display.height()-plotScale); /* Setting actual plot coordinates in pixels */
-       graphPoint1X = display.width(); 
+       graphPoint1X = (display.width()-1); 
       }
   }
 
   if (displayMode == 1) /* Drawing the graph lines*/
    { if (graphPoint1X > 0) 
         { display.drawLine(graphPoint1X, graphPoint1Y, graphPoint1X, display.height()-1, WHITE);
+          display.drawLine(graphPoint1X, graphPoint1Y, display.width(), display.height()-1, WHITE);
         }
    }
 
